@@ -71,7 +71,7 @@ class PruneTransform extends Transform {
       verify(typeof options.ext === 'string' || (options.ext instanceof Array && options.ext.every(e => typeof e === 'string')),
         'options.ext must be a string or string[]');
       const ext = typeof options.ext === 'string' ? [ options.ext ] : options.ext.slice();
-      this._mapper = (name) => ext.map(e => name.replace(/(\.[^.]*)?$/, e));
+      this._mapper = (name) => ext.map(e => name.replace(/(\.[^./\\]*)?$/, e));
       if (this._pattern === '**/*') {
         this._pattern = '**/*@(' + ext.join('|') + ')';
       } else {

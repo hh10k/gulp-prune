@@ -85,8 +85,8 @@ gulp.task('build', () => {
   ```js
   {
     map: (name) => [
-      name.replace(/\.?[^./\\]*$/, '.js'),
-      name.replace(/\.?[^./\\]*$/, '.js.map')
+      name.replace(/(\.[^./\\]*)?$/, '.js'),
+      name.replace(/(\.[^./\\]*)?$/, '.js.map')
     ],
     filter: '**/*.@(js|js.map)'
   }

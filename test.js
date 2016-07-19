@@ -311,6 +311,7 @@ describe('prune()', function() {
       mockFs({
         'src/1.old': '',
         'src/2': '',
+        'src/4.old/four': '',
         'dest/1.old': '',
         'dest/1.old.new': '',
         'dest/1.new': '',
@@ -320,6 +321,7 @@ describe('prune()', function() {
         'dest/2.new.map': '',
         'dest/3.new': '',
         'dest/3.map': '',
+        'dest/4.new': '',
       });
     });
     afterEach(() => {
@@ -341,6 +343,7 @@ describe('prune()', function() {
       testStream(done, prune('dest', { ext: '.new' }), [
         'dest/1.old.new',
         'dest/3.new',
+        'dest/4.new',
       ]);
     });
 
@@ -348,6 +351,7 @@ describe('prune()', function() {
       testStream(done, prune({ dest: 'dest', ext: [ '.new', '.new.map' ] }), [
         'dest/1.old.new',
         'dest/3.new',
+        'dest/4.new',
       ]);
     });
 
