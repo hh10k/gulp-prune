@@ -105,7 +105,7 @@ class PruneTransform extends Transform {
             }
           break;
           default:
-            check(false, 'options.map function must return a string or string[], or a Promise that resolves to that.');
+            verify(false, 'options.map function must return a string or string[], or a Promise that resolves to that.');
         }
       })
       .then(() => callback(null, file), callback);
@@ -149,4 +149,4 @@ class PruneTransform extends Transform {
 
 module.exports = function prune(dest, options) {
   return new PruneTransform(dest, options);
-}
+};

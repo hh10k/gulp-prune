@@ -1,9 +1,10 @@
 {
   "name": "gulp-prune",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Delete extraneous files from target directory on stream flush",
   "main": "index.js",
   "scripts": {
+    "pretest": "eslint *.js",
     "test": "mocha"
   },
   "keywords": [
@@ -15,8 +16,16 @@
     "name": "Kurt Blackwell",
     "url": "https://github.com/hh10k"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hh10k/gulp-prune.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hh10k/gulp-prune/issues"
+  },
   "license": "ISC",
   "devDependencies": {
+    "eslint": "^3.1.1",
     "mocha": "^2.5.3",
     "mock-fs": "^3.11.0"
   },

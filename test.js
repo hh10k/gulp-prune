@@ -31,7 +31,7 @@ class TestFile extends gutil.File {
       contents: new Buffer(fs.readFileSync(file)),
       path: path.resolve(file),
       stat: fs.statSync(file)
-    })
+    });
   }
 }
 
