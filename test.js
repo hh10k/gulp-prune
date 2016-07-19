@@ -223,62 +223,6 @@ describe('prune()', function() {
 
   });
 
-  describe('options.ext', function() {
-
-    beforeEach(() => {
-      mockFs({
-        'src/1.old': '',
-        'src/2': '',
-        'dest/1.old': '',
-        'dest/1.old.new': '',
-        'dest/1.new': '',
-        'dest/1.new.map': '',
-        'dest/2': '',
-        'dest/2.new': '',
-        'dest/2.new.map': '',
-      });
-    });
-    afterEach(() => {
-      mockFs.restore();
-    });
-
-    it('must be a string or string[]', function() {
-      let extTypes = Object.assign({ 'number[]': [ 123 ] }, types);
-      Object.keys(extTypes)
-        .filter(t => t != 'string' && t != 'array')
-        .forEach(t => {
-          assert.throws(() => {
-            prune('dest', { ext: extTypes[t] });
-          }, gutil.PluginError, 'Should not accept ' + t);
-        });
-    });
-
-    it("can't be used with options.map", function() {
-      assert.throws(() => {
-        prune('dest', { map: f => f + '.js', ext: '.js' });
-      }, gutil.PluginError);
-    });
-
-    it('adds or removes single extension', function(done) {
-      testStream(done, prune('dest', { ext: '.new' }), [
-        'dest/1.old',
-        'dest/1.old.new',
-        'dest/1.new.map',
-        'dest/2',
-        'dest/2.new.map',
-      ]);
-    });
-
-    it('adds or removes multiple extensions', function(done) {
-      testStream(done, prune({ dest: 'dest', ext: [ '.new', '.new.map' ] }), [
-        'dest/1.old',
-        'dest/1.old.new',
-        'dest/2',
-      ]);
-    });
-
-  });
-
   describe('options.filter', function() {
 
     beforeEach(() => {
@@ -291,6 +235,8 @@ describe('prune()', function() {
         'dest/bab': '',
         'dest/bba': '',
         'dest/bbb': '',
+        'dest/123': '',
+        'dest/c/123': '',
       });
     });
     afterEach(() => {
@@ -325,6 +271,12 @@ describe('prune()', function() {
       ]);
     });
 
+    it("pattern matches relative to base directory", function(done) {
+      testStream(done, prune('dest', { filter: '123' }), [
+        'dest/123',
+      ]);
+    });
+
     it('propagates errors when filter throws', function(done) {
         const d = domain.create();
         d.on('error', error => {
@@ -350,6 +302,71 @@ describe('prune()', function() {
 
           stream.end();
         });
+    });
+  });
+
+  describe('options.ext', function() {
+
+    beforeEach(() => {
+      mockFs({
+        'src/1.old': '',
+        'src/2': '',
+        'dest/1.old': '',
+        'dest/1.old.new': '',
+        'dest/1.new': '',
+        'dest/1.new.map': '',
+        'dest/2': '',
+        'dest/2.new': '',
+        'dest/2.new.map': '',
+        'dest/3.new': '',
+        'dest/3.map': '',
+      });
+    });
+    afterEach(() => {
+      mockFs.restore();
+    });
+
+    it('must be a string or string[]', function() {
+      let extTypes = Object.assign({ 'number[]': [ 123 ] }, types);
+      Object.keys(extTypes)
+        .filter(t => t != 'string' && t != 'array')
+        .forEach(t => {
+          assert.throws(() => {
+            prune('dest', { ext: extTypes[t] });
+          }, gutil.PluginError, 'Should not accept ' + t);
+        });
+    });
+
+    it('adds or removes single extension', function(done) {
+      testStream(done, prune('dest', { ext: '.new' }), [
+        'dest/1.old.new',
+        'dest/3.new',
+      ]);
+    });
+
+    it('adds or removes multiple extensions', function(done) {
+      testStream(done, prune({ dest: 'dest', ext: [ '.new', '.new.map' ] }), [
+        'dest/1.old.new',
+        'dest/3.new',
+      ]);
+    });
+
+    it("can't be used with options.map", function() {
+      assert.throws(() => {
+        prune('dest', { map: f => f + '.js', ext: '.js' });
+      }, gutil.PluginError);
+    });
+
+    it('works with options.filter pattern', function(done) {
+      testStream(done, prune({ dest: 'dest', ext: [ '.new', '.new.map' ], filter: '**/3.*' }), [
+        'dest/3.new',
+      ]);
+    });
+
+    it('works with options.filter function', function(done) {
+      testStream(done, prune({ dest: 'dest', ext: [ '.new', '.new.map' ], filter: (name) => /3/.test(name) }), [
+        'dest/3.new',
+      ]);
     });
   });
 

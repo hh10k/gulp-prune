@@ -1,7 +1,7 @@
 {
   "name": "gulp-prune",
-  "version": "0.1.2",
-  "description": "Delete extraneous files from target directory on stream flush",
+  "version": "0.2.0",
+  "description": "Delete files that should not be in the destination directory",
   "main": "index.js",
   "scripts": {
     "pretest": "eslint *.js",
