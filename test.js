@@ -48,8 +48,8 @@ function testStream(done, stream, expectedDeleted) {
   });
   d.run(() => {
     const original = find('**/*');
-    assert(expectedDeleted.every(f => original.includes(f)));
-    const expectedResult = original.filter(f => !expectedDeleted.includes(f));
+    assert(expectedDeleted.every(f => original.indexOf(f) != -1));
+    const expectedResult = original.filter(f => expectedDeleted.indexOf(f) == -1);
 
     find('src/**/*').forEach(f => stream.write(new TestFile('src', f)));
 
