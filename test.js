@@ -30,7 +30,7 @@ class TestFile extends gutil.File {
     super({
       cwd: process.cwd(),
       base: path.resolve(base),
-      contents: new Buffer(fs.readFileSync(file)),
+      contents: fs.readFileSync(file),
       path: path.resolve(file),
       stat: fs.statSync(file)
     });
