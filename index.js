@@ -107,7 +107,7 @@ class PruneTransform extends Transform {
   }
 
   _flush(callback) {
-    globby(this._pattern, { cwd: this._dest, nodir: true })
+    globby(this._pattern, { cwd: this._dest })
       .then(candidates => {
         const deleting = candidates.filter(this._filter);
         return Promise.all(deleting.map(f => {
