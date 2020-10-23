@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "strict": true,
+        "declaration": true,
+        "allowJs": true,
+        "emitDeclarationOnly": true
+    },
+    "include": [
+        "index.js"
+    ]
+}
