@@ -3,12 +3,14 @@
 const fs = require('fs');
 const path = require('path');
 const globby = require('globby');
-const gutil = require('gulp-util');
+const PluginError = require('plugin-error');
+const colors = require('ansi-colors');
+const log = require('fancy-log');
 const Transform = require('stream').Transform;
 
 function verify(condition, message) {
   if (!condition) {
-    throw new gutil.PluginError('gulp-prune', message);
+    throw new PluginError('gulp-prune', message);
   }
 }
 
@@ -125,12 +127,12 @@ class PruneTransform extends Transform {
           const fileRelative = path.relative('.', file);
           if (error) {
             if (this._verbose) {
-              gutil.log('Prune:', gutil.colors.red(`${fileRelative}: ${error.message || error}`));
+              log('Prune:', colors.red(`${fileRelative}: ${error.message || error}`));
             }
             reject(new Error(`${fileRelative}: ${error.message || error}`));
           } else {
             if (this._verbose) {
-              gutil.log('Prune:', gutil.colors.yellow(fileRelative));
+              log('Prune:', colors.yellow(fileRelative));
             }
             resolve();
           }
