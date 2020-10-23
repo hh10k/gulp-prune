@@ -47,7 +47,7 @@ class PruneTransform extends Transform {
     this._dest = path.resolve(dest);
     this._keep = keep;
     this._mapper = (name) => name;
-    this._filter = (name) => !keep.hasOwnProperty(name);
+    this._filter = (name) => !Object.hasOwnProperty.call(keep, name);
     this._pattern = '**/*';
 
     if (options.map !== undefined) {
