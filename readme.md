@@ -12,18 +12,18 @@ This example will delete all files in the target directory that do not match a s
 after transpiling changed files.
 
 ```js
-var gulp = require('gulp');
-var prune = require('gulp-prune');
-var newer = require('gulp-newer');
-var babel = require('gulp-babel');
+const gulp = require('gulp');
+const prune = require('gulp-prune');
+const newer = require('gulp-newer');
+const babel = require('gulp-babel');
 
-gulp.task('build', () => {
+module.exports.build = () => {
   return gulp.src('src/**/*.js')
     .pipe(prune('build/'))
     .pipe(newer('build/'))
     .pipe(babel({ presets: [ 'es2015' ] }))
     .pipe(gulp.dest('build/'));
-});
+};
 ```
 
 ### Prune with custom mapping
@@ -33,13 +33,13 @@ The mapping can be customised if the source and destination file names are diffe
 This example will prune all .js and .js.map files that aren't from the source .ts files.
 
 ```js
-var gulp = require('gulp');
-var prune = require('gulp-prune');
-var newer = require('gulp-newer');
-var sourcemaps = require('gulp-sourcemaps');
-var typescript = require('gulp-typescript');
+const gulp = require('gulp');
+const prune = require('gulp-prune');
+const newer = require('gulp-newer');
+const sourcemaps = require('gulp-sourcemaps');
+const typescript = require('gulp-typescript');
 
-gulp.task('build', () => {
+module.exports.build = () => {
   return gulp.src('src/**/*.ts')
     .pipe(prune({ dest: 'build/', ext: [ '.js', '.js.map' ] }))
     .pipe(newer({ dest: 'build/', ext: '.js' }))
@@ -47,7 +47,7 @@ gulp.task('build', () => {
     .pipe(typescript())
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('build/'));
-});
+}
 ```
 
 ## API

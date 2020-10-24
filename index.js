@@ -211,8 +211,8 @@ class PruneTransform extends Transform {
  * @typedef {(dest: string) => PruneTransform} DestFunc
  * @typedef {(dest: string, options: Options) => PruneTransform} DestWithOptionsFunc
  * @typedef {(options: OptionsWithDest) => PruneTransform} DestAsOptionsFunc
- * @type {DestFunc | DestWithOptionsFunc | DestAsOptionsFunc}
- */
+ * @type {DestFunc & DestWithOptionsFunc & DestAsOptionsFunc}
+ */// @ts-ignore
 module.exports = function prune(dest, options) {
   // Parse, validate and normalize inputs to handle function overloads
   verify(arguments.length <= 2, 'too many arguments');
@@ -254,7 +254,7 @@ module.exports = function prune(dest, options) {
     if (!Array.isArray(options.ext)) {
       options.ext = [ options.ext ];
     }
-    verify((options.ext instanceof Array && options.ext.every(e => typeof e === 'string')), 'options.ext must be a string or string[]');
+    verify(Array.isArray(options.ext) && options.ext.every((/** @type {any} */ e) => typeof e === 'string'), 'options.ext must be a string or string[]');
     strictOptions.ext = options.ext.slice();
   }
 
