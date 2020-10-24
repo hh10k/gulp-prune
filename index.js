@@ -1,6 +1,6 @@
 'use strict';
 
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
 const globby = require('globby');
 const PluginError = require('plugin-error');
@@ -149,8 +149,8 @@ class PruneTransform extends Transform {
         const file = path.join(this._dest, f);
         return this._remove(file);
       }));
-    } catch (err) {
-      callback(new PluginError('gulp-prune', err, { message: 'An error occurred' }));
+    } catch (error) {
+      callback(new PluginError('gulp-prune', error, { message: 'An error occurred' }));
       return;
     }
 
@@ -160,27 +160,21 @@ class PruneTransform extends Transform {
   /**
    * @param {string} file
    */
-  _remove(file) {
-    return new Promise((resolve, reject) => {
-      fs.unlink(file, (error) => {
-        try {
-          const fileRelative = path.relative('.', file);
-          if (error) {
-            if (this._verbose) {
-              log('Prune:', colors.red(`${fileRelative}: ${error.message || error}`));
-            }
-            reject(new Error(`${fileRelative}: ${error.message || error}`));
-          } else {
-            if (this._verbose) {
-              log('Prune:', colors.yellow(fileRelative));
-            }
-            resolve();
-          }
-        } catch (e) {
-          reject(e);
-        }
-      });
-    });
+  async _remove(file) {
+    const fileRelative = path.relative('.', file);
+
+    try {
+      await fs.unlink(file);
+    } catch (error) {
+      if (this._verbose) {
+        log('Prune:', colors.red(`${fileRelative}: ${error.message || error}`));
+      }
+      throw new Error(`${fileRelative}: ${error.message || error}`);
+    }
+
+    if (this._verbose) {
+      log('Prune:', colors.yellow(fileRelative));
+    }
   }
 }
 
