@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const mockFs = require('mock-fs');
 const fs = require('fs');

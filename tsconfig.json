@@ -1,11 +1,15 @@
 {
-    "compilerOptions": {
-        "strict": true,
-        "declaration": true,
-        "allowJs": true,
-        "emitDeclarationOnly": true
-    },
-    "include": [
-        "index.js"
-    ]
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "module": "CommonJS",
+    "removeComments": true,
+    "strict": true,
+    "target": "ES2018"
+  },
+  "include": [
+    "index.js"
+  ]
 }
