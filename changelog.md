@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 * TypeScript definitions.
 
+### Fixed
+* Issues deleting files terminating the stream early despite other deletions potentially still occurring in background.
+
 ### Changed
 * Only forward slashes supported in glob expression. [globby@10.0.0](https://github.com/sindresorhus/globby/releases/tag/v10.0.0)→[fast-glob@3.0.0](https://github.com/mrmlnc/fast-glob/releases/tag/3.0.0)
 * Increased minimum NodeJS version from 6 to 10.

@@ -8,6 +8,9 @@ const colors = require('ansi-colors');
 const log = require('fancy-log');
 const Transform = require('stream').Transform;
 const File = require('vinyl');
+// @ts-ignore TODO Remove once NodeJS 10 is out of support matrix
+const allSettled = require('@ungap/promise-all-settled').bind(Promise);
+const AggregateError = require('aggregate-error');
 
 /**
  * @param {boolean} condition
@@ -145,10 +148,25 @@ class PruneTransform extends Transform {
       const candidates = await globby(this._pattern, { cwd: this._dest });
       const deleting = candidates.filter(this._filter);
 
-      await Promise.all(deleting.map(f => {
+      // TODO Use Promise.allSettled once NodeJS 10 out of support matrix
+      /** @type {({ status: 'fulfilled' }|{ status: 'rejected', reason: unknown })[]} */
+      const results = await allSettled(deleting.map(f => {
         const file = path.join(this._dest, f);
         return this._remove(file);
       }));
+
+      /** @type {any[]} */
+      const errors = [];
+      for (const result of results) {
+        if (result.status === 'rejected') {
+          errors.push(result.reason);
+        }
+      }
+
+      if (errors.length > 0) {
+        throw new AggregateError(errors);
+      }
+
     } catch (error) {
       callback(new PluginError('gulp-prune', error, { message: 'An error occurred' }));
       return;
