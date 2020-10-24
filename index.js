@@ -7,6 +7,7 @@ const PluginError = require('plugin-error');
 const colors = require('ansi-colors');
 const log = require('fancy-log');
 const Transform = require('stream').Transform;
+const File = require('vinyl');
 
 /**
  * @param {boolean} condition
@@ -111,42 +112,49 @@ class PruneTransform extends Transform {
    * @param {BufferEncoding} encoding
    * @param {import('stream').TransformCallback} callback
    */
-  _transform(file, encoding, callback) {
-    Promise.resolve()
-      .then(() => {
-        const name = path.relative(file.base, file.path);
-        return this._mapper(name);
-      })
-      .then(mapped => {
-        switch (typeof mapped) {
-          case 'string':
-            this._keep[normalize(mapped)] = true;
-          break;
-          case 'object':
-            for (let i = 0; i < mapped.length; ++i) {
-              this._keep[normalize(mapped[i])] = true;
-            }
-          break;
-          default:
-            verify(false, 'options.map function must return a string or string[], or a Promise that resolves to that.');
-        }
-      })
-      .then(() => callback(null, file), callback);
+  async _transform(file, encoding, callback) {
+    // Only handle Vinyl chunks
+    if (!File.isVinyl(file)) {
+      this.push(file, encoding);
+      callback();
+      return;
+    }
+
+    const name = path.relative(file.base, file.path);
+    const mapped = this._mapper(name);
+
+    if (Array.isArray(mapped)) {
+      for (const mappedPath of mapped) {
+        this._keep[normalize(mappedPath)] = true;
+      }
+    } else if (typeof mapped === 'string') {
+      this._keep[normalize(mapped)] = true;
+    } else {
+      verify(false, 'options.map function must return a string or string[], or a Promise that resolves to that.');
+    }
+
+    this.push(file, encoding);
+    callback();
   }
 
   /**
    * @param {import('stream').TransformCallback} callback
    */
-  _flush(callback) {
-    globby(this._pattern, { cwd: this._dest })
-      .then(candidates => {
-        const deleting = candidates.filter(this._filter);
-        return Promise.all(deleting.map(f => {
-          const file = path.join(this._dest, f);
-          this._remove(file);
-        }));
-      })
-      .then(deleted => callback(), callback);
+  async _flush(callback) {
+    try {
+      const candidates = await globby(this._pattern, { cwd: this._dest });
+      const deleting = candidates.filter(this._filter);
+
+      await Promise.all(deleting.map(f => {
+        const file = path.join(this._dest, f);
+        return this._remove(file);
+      }));
+    } catch (err) {
+      callback(new PluginError('gulp-prune', err, { message: 'An error occurred' }));
+      return;
+    }
+
+    callback();
   }
 
   /**
