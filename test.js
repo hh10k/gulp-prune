@@ -4,9 +4,10 @@ const mockFs = require('mock-fs');
 const fs = require('fs');
 const path = require('path');
 const assert = require('assert');
-const Transform = require('stream').Transform;
+const { Transform } = require('stream');
+const Vinyl = require('vinyl');
+const PluginError = require('plugin-error');
 const globby = require('globby');
-const gutil = require('gulp-util');
 const prune = require('./index.js');
 const domain = require('domain');
 
@@ -25,12 +26,12 @@ const types = {
 class ExpectedError extends Error {
 }
 
-class TestFile extends gutil.File {
+class TestFile extends Vinyl {
   constructor(base, file) {
     super({
       cwd: process.cwd(),
       base: path.resolve(base),
-      contents: new Buffer(fs.readFileSync(file)),
+      contents: Buffer.from(fs.readFileSync(file)),
       path: path.resolve(file),
       stat: fs.statSync(file)
     });
@@ -78,31 +79,31 @@ describe('prune()', function() {
   it('fails with no arguments', function() {
     assert.throws(() => {
       prune();
-    }, gutil.PluginError);
+    }, PluginError);
   });
 
   it("fails when the first argument isn't a string or an object", function() {
     assert.throws(() => {
       prune(5);
-    }, gutil.PluginError);
+    }, PluginError);
   });
 
   it("fails when dest isn't an argument or in the options", function() {
     assert.throws(() => {
       prune({});
-    }, gutil.PluginError);
+    }, PluginError);
   });
 
   it("fails when options isn't an object", function() {
     assert.throws(() => {
       prune('somewhere', 5);
-    }, gutil.PluginError);
+    }, PluginError);
   });
 
   it('fails when dest is specified two ways', function() {
     assert.throws(() => {
       prune('somewhere', { dest: 'elsewhere' });
-    }, gutil.PluginError);
+    }, PluginError);
   });
 
   describe('returns Transform stream', function() {
@@ -199,7 +200,7 @@ describe('prune()', function() {
         .forEach(t => {
           assert.throws(() => {
             prune('dest', { map: types[t] });
-          }, gutil.PluginError, 'Should not accept ' + t);
+          }, PluginError, 'Should not accept ' + t);
         });
     });
 
@@ -251,7 +252,7 @@ describe('prune()', function() {
         .forEach(t => {
           assert.throws(() => {
             prune('dest', { filter: types[t] });
-          }, gutil.PluginError, 'Should not accept ' + t);
+          }, PluginError, 'Should not accept ' + t);
         });
     });
 
@@ -337,7 +338,7 @@ describe('prune()', function() {
         .forEach(t => {
           assert.throws(() => {
             prune('dest', { ext: extTypes[t] });
-          }, gutil.PluginError, 'Should not accept ' + t);
+          }, PluginError, 'Should not accept ' + t);
         });
     });
 
@@ -360,7 +361,7 @@ describe('prune()', function() {
     it("can't be used with options.map", function() {
       assert.throws(() => {
         prune('dest', { map: f => f + '.js', ext: '.js' });
-      }, gutil.PluginError);
+      }, PluginError);
     });
 
     it('works with options.filter pattern', function(done) {
@@ -384,7 +385,7 @@ describe('prune()', function() {
         .forEach(t => {
           assert.throws(() => {
             prune('dest', { verbose: types[t] });
-          }, gutil.PluginError, 'Should not accept ' + t);
+          }, PluginError, 'Should not accept ' + t);
         });
     });
 
