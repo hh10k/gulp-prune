@@ -1,3 +1,4 @@
 # Exclude all dot files by default.  Explicitly include when needed.
 \.*
-!/\.eslintrc
+tsconfig.json
+test.js
