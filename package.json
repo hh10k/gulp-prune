@@ -1,6 +1,6 @@
 {
   "name": "gulp-prune",
-  "version": "1.0.0",
+  "version": "1.0.0-rc.0",
   "description": "Delete files that should not be in the destination directory",
   "main": "index.js",
   "types": "index.d.ts",
